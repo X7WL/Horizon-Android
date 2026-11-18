@@ -42,17 +42,16 @@ impl UploadBudget {
             } else {
                 Duration::from_millis(2)
             };
-            let boost = budget.byte_limit >= (4 << 20);
-            if frame_dt > Duration::from_millis(22) && !boost {
-                budget.byte_limit = budget.byte_limit.min(1 << 20);
-                budget.time_limit = Some(Duration::from_millis(1));
-            } else if (frame_dt > Duration::from_millis(18) || interactive) && !boost {
-                budget.byte_limit = budget.byte_limit.min(max_upload / 2);
-                budget.time_limit =
-                    Some(max_time.clamp(Duration::from_millis(1), Duration::from_millis(2)));
-            } else {
-                budget.byte_limit = budget.byte_limit.min(max_upload);
-                budget.time_limit = Some(max_time);
+            if frame_dt > Duration::from_millis(22) {
+    budget.byte_limit = budget.byte_limit.min(1 << 20);
+    budget.time_limit = Some(Duration::from_millis(1));
+} else if frame_dt > Duration::from_millis(18) || interactive {
+    budget.byte_limit = budget.byte_limit.min(max_upload / 2);
+    budget.time_limit =
+        Some(max_time.clamp(Duration::from_millis(1), Duration::from_millis(2)));
+} else {
+    budget.byte_limit = budget.byte_limit.min(max_upload);
+    budget.time_limit = Some(max_time);
             }
         }
         budget
